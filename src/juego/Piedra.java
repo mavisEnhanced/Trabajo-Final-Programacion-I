@@ -28,6 +28,9 @@ public class Piedra {
 		e.dibujarCirculo(x, y, 10,Color.yellow);
 	}
 
+	public Rectangle piedraHitbox() {
+		return new Rectangle(x, y, 10, 10);
+	}
 	
 	public int getX() {
 		return x;
@@ -40,5 +43,7 @@ public class Piedra {
 	public boolean getVisible() {
 		return visible;
 	}
+	
+	
 	
 }

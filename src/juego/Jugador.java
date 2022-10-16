@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 
 import entorno.Entorno;
+import entorno.Herramientas;
 
 public class Jugador  {
 	
@@ -20,7 +21,8 @@ public class Jugador  {
 	public double maxVelocidadCaida = 5;
 	public double actualVelocidadCaida = .1;
 	
-	public Piedra piedras[] = new Piedra[3];
+	Piedra p;
+	public Piedra piedras[] = new Piedra[1];
 	public int width = 32;
 	public int height = 32;
 	
@@ -68,20 +70,22 @@ public class Jugador  {
 	}
 	
 	public Rectangle jugadorHitBox() {
-		return new Rectangle(x ,y ,width,height);
+		return new Rectangle(this.x,this.y,width,height);
 	}
+	public int getY() {
+		return this.y;
+	}
+	
 	
 	public void disparar() {
 		Piedra p = new Piedra(x,y);
 		piedras[0]=p;
 	}
-
-	public Rectangle getBounds() {
-		return new Rectangle(x,y,15,15);
-	}
 	
 	public void dibujarJugador(Entorno e) {
-		e.dibujarRectangulo(x-8, y, width,height,0,Color.magenta);		
+		//jugador = Herramientas.cargarImagen("sonic1.gif");
+		e.dibujarRectangulo(x-8, y, width,height,0,Color.magenta);
+		//e.dibujarImagen(jugador, x, y, 0,0.15);
 	}
 
 	

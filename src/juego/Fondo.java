@@ -27,10 +27,12 @@ public class Fondo {
 	// Valores para el arbol
 	Random r = new Random();
 	
+	//int arbolGap;
 	
-
 	public Fondo(Entorno e) {
 		arboles(e);
+		moverFondo();
+		dibujar(e);
 	}
 	
 	
@@ -47,29 +49,27 @@ public class Fondo {
 		}
 
 	}
-	
 	// Crear lista de arboles
 	public void arboles(Entorno e) {
-		arboles[0] = new Arbol(1200,560,e);
-		arboles[1]  = new Arbol(1500,600,e);
-		arboles[2] = new Arbol(1700,580,e);
-		arboles[3] = new Arbol(1900, 560,e);
-		arboles[4] = new Arbol(2100,610,e);
+		arboles[0] = new Arbol(1200 + r.nextInt(300, 500),600,e,r.nextDouble(0.5,1.2));
+		arboles[1] = new Arbol(1400 + r.nextInt(300, 500),600,e,r.nextDouble(0.5,1.2));
+		//arboles[2] = new Arbol(1600 + r.nextInt(300, 500),600,e,r.nextDouble(0.5,1.2));
+		//arboles[3] = new Arbol(1800 + r.nextInt(300, 500),600,e,r.nextDouble(0.5,1.2));
+		//arboles[4] = new Arbol(1900 + r.nextInt(300, 500),600,e,r.nextDouble(0.5,1.2));
 	}
-	
 	
 	//Dibujar el fondo en pantalla
 	public void dibujar(Entorno e) {
 		fondo = Herramientas.cargarImagen("Layer_0006_4.png");
 		fondo1 = Herramientas.cargarImagen("Layer_0003_6.png");
+		fondo2= Herramientas.cargarImagen("jgbk.png");
 		suelo = Herramientas.cargarImagen("Spring3Long1_0.png");
+		e.dibujarImagen(fondo2, 600, 200, 0, 3);
 		e.dibujarImagen(fondo1,x, y,0,2.1);
 		e.dibujarImagen(fondo, x2, y2,0,2.1);
 		e.dibujarImagen(fondo1,x2, y2,0,2.1);
 		e.dibujarImagen(fondo, x, y,0,2.1);
 		e.dibujarImagen(suelo,suelox,700, 0, 0.3);
-		
-		
 	}
 }
 

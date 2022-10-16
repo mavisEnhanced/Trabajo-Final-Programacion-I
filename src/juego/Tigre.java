@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.util.Random;
 
 import entorno.Entorno;
+import entorno.Herramientas;
 
 
 public class Tigre {
@@ -25,10 +26,10 @@ public class Tigre {
 	}
 	
 	public void dibujarTigre(Entorno e) {
-		
+		//tigre = Herramientas.cargarImagen("puma.gif");
 		if(estaVivo)
-			e.dibujarRectangulo(x, y, 100,50,0, Color.RED);
-			
+			e.dibujarRectangulo(x, y, 60 ,50,0, Color.RED);
+			//e.dibujarImagen(tigre, x, y, 0, 0.5);
 	}
 	
 	public void mover() {	
