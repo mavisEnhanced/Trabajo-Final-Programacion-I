@@ -25,7 +25,7 @@ public class Jugador  {
 	public Piedra piedras[] = new Piedra[1];
 	public int width = 32;
 	public int height = 32;
-	
+	public boolean puedeDisparar= true;
 	
 	public Jugador(int x , int y){
 		this.x = x;
@@ -72,20 +72,24 @@ public class Jugador  {
 	public Rectangle jugadorHitBox() {
 		return new Rectangle(this.x,this.y,width,height);
 	}
-	public int getY() {
-		return this.y;
+	public int getX() {
+		return this.x - width/2;
 	}
 	
 	
 	public void disparar() {
-		Piedra p = new Piedra(x,y);
-		piedras[0]=p;
+		if(puedeDisparar) {
+			Piedra p = new Piedra(x,y);
+			piedras[0]=p;
+			
+		}
+		puedeDisparar = false;
 	}
 	
 	public void dibujarJugador(Entorno e) {
-		//jugador = Herramientas.cargarImagen("sonic1.gif");
+		//jugador = Herramientas.cargarImagen("upKey.gif");
 		e.dibujarRectangulo(x-8, y, width,height,0,Color.magenta);
-		//e.dibujarImagen(jugador, x, y, 0,0.15);
+		//e.dibujarImagen(jugador, x-(width/4), y-40, 0,1);
 	}
 
 	

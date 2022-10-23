@@ -10,7 +10,7 @@ import entorno.Herramientas;
 
 
 public class Tigre {
-	Image tigre;
+	Image tigre,fx;
 	//Posicion de spawn y velocidad de movimiento
 	public int x;
 	public int y;
@@ -32,7 +32,7 @@ public class Tigre {
 			//e.dibujarImagen(tigre, x, y, 0, 0.5);
 	}
 	
-	public void mover() {	
+	public void mover(Entorno e) {	
 		x = x - speed;
 		if(estaVivo && x <=-100) {
 			x = random.nextInt(1300,1600);
@@ -42,6 +42,8 @@ public class Tigre {
 		// Cuando llegue a maso menos la mitad, correra 
 		else if(estaVivo && x <= 700) {
 			x = x - speed * random.nextInt(1,4);
+			//fx = Herramientas.cargarImagen("FX1.gif");
+			//e.dibujarImagen(fx, x+60, y, 0, 1);
 		}
 	}
 	

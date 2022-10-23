@@ -29,12 +29,12 @@ public class Fondo {
 	
 	//int arbolGap;
 	
+	
 	public Fondo(Entorno e) {
 		arboles(e);
 		moverFondo();
 		dibujar(e);
 	}
-	
 	
 	//Movimiento del fondo
 	public void moverFondo() {
@@ -51,12 +51,18 @@ public class Fondo {
 	}
 	// Crear lista de arboles
 	public void arboles(Entorno e) {
-		arboles[0] = new Arbol(1200 + r.nextInt(300, 500),600,e,r.nextDouble(0.5,1.2));
-		arboles[1] = new Arbol(1400 + r.nextInt(300, 500),600,e,r.nextDouble(0.5,1.2));
-		//arboles[2] = new Arbol(1600 + r.nextInt(300, 500),600,e,r.nextDouble(0.5,1.2));
-		//arboles[3] = new Arbol(1800 + r.nextInt(300, 500),600,e,r.nextDouble(0.5,1.2));
-		//arboles[4] = new Arbol(1900 + r.nextInt(300, 500),600,e,r.nextDouble(0.5,1.2));
+		
+							   //x // y //Escala
+		arboles[0] = new Arbol(1200,400,e,r.nextDouble(0.5,1.2));
+		arboles[1] = new Arbol(1400,400,e,r.nextDouble(0.5,1.2));
+		arboles[2] = new Arbol(1600,400,e,r.nextDouble(0.5,1.2));
+		arboles[3] = new Arbol(1800,400,e,r.nextDouble(0.5,1.2));
+		arboles[4] = new Arbol(2000,400,e,r.nextDouble(0.5,1.2));
 	}
+	
+	
+	
+	
 	
 	//Dibujar el fondo en pantalla
 	public void dibujar(Entorno e) {

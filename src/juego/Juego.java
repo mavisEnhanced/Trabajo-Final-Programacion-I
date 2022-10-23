@@ -74,6 +74,7 @@ public class Juego extends InterfaceJuego {
 			renderizar(entorno);
 			colisionConRama(entorno);
 			colisionConEnemigo();
+			piedras();
 			//colisionConSerpiente();
 			ui.drawMessage(entorno);
 		}
@@ -122,16 +123,18 @@ public class Juego extends InterfaceJuego {
 		for(int i = 0 ; i < tigres.length;i++) {
 			if(tigres[i]!=null) {
 				tigres[i].dibujarTigre(e);
-				tigres[i].mover();
+				tigres[i].mover(e);
 			}
 		}
 	}
+	
+	
 	// Colision con enemigo
 	public boolean colisionConEnemigo() {
 		for(int i = 0 ; i < tigres.length;i++) {
 			if(tigres[i]!=null) {
-				if(jugador.jugadorHitBox().intersects(tigres[i].tigreHitBox())) {
-					tigres[i]= null;
+				if(tigres[i].tigreHitBox().intersects(jugador.jugadorHitBox())) {
+					tigres[i] = null;
 					ui.puntos++;
 					ui.addMessage("+1");
 					contadorEliminados++;
@@ -142,18 +145,7 @@ public class Juego extends InterfaceJuego {
 		return false;
 	}
 
-	public boolean colisionConSerpiente() {
-		for(int i = 0 ; i < arbol.serpientes.length;i++) {
-			if(arbol.serpientes[i]!=null) {
-				if(jugador.jugadorHitBox().intersects(arbol.serpientes[i].serpienteHitBox())) {
-					arbol.serpientes[i] = null;
-					return true;
-				}
-			}	
-		}
-		return false;
-	}
-	
+
 	// Eventos con elementos del mapa
 	
 	
@@ -161,52 +153,69 @@ public class Juego extends InterfaceJuego {
 	public void dibujarArboles(Entorno e) {
 		for (int i=0; i < fondo.arboles.length;i++) {
 			if(fondo.arboles[i]!=null) {
-			fondo.arboles[i].dibujarArbol(e);
-			fondo.arboles[i].mover();
+				fondo.arboles[i].dibujarArbol(e);
+				fondo.arboles[i].mover();
 			}
 		}
 	}
-	
 	
 	// Colision con rama del arbol // corregir bugs
 	public void colisionConRama(Entorno e) {	
 		for (int i = 0; i < fondo.arboles.length;i++) {
 			if(fondo.arboles[i]!=null) {
-				if(jugador.jugadorHitBox().intersects((fondo.arboles[i].ramaHitBox(e)))) {
-					if(jugador.getY() <= fondo.arboles[i].getramaY()) 
-					{jugador.caer = false;System.out.println("colision con rama");}
-				}
 				// Colision del jugador con la parte de abajo de la rama
-				if(jugador.jugadorHitBox().intersects(fondo.arboles[i].ramaHitBox(e)) 
-						&& jugador.saltando==true)
-				{System.out.println("colision con rama");jugador.saltando = false;jugador.caer = true;}
+				if(jugador.jugadorHitBox().intersects(fondo.arboles[i].rama.hitBox()) 
+						&& jugador.saltando==true) {jugador.saltando = false;jugador.caer = true;}
 				// Colision del jugador con la parte de arriba de la rama
-				// Jugador fuera de la Hitbox de la rama (VALOR X)
-				if(!jugador.jugadorHitBox().intersects(fondo.arboles[i].ramaHitBox(e)) && jugador.saltando == false){
-					if(jugador.y <= 560) {jugador.caer = true;}
+				if(fondo.arboles[i].rama.hitBox().intersects(jugador.jugadorHitBox()) && 
+					jugador.jugadorHitBox().y <= fondo.arboles[i].rama.hitBox().y) {
+						jugador.saltando=false;
+						jugador.caer = false;
+						if(jugador.x + jugador.width > fondo.arboles[i].rama.x + fondo.arboles[i].rama.width ) {jugador.caer=true;}
 				}
 			}
 		}
 	}
-	public void piedras(Entorno e) {
-		for(int i =0; i < jugador.piedras.length;i++) {
-			if(jugador.piedras[i]!= null) {
-				jugador.piedras[i].dibujarPiedra(e);
-				jugador.piedras[i].mover();
-				if(colisionConEnemigo()) {
-					jugador.piedras[i] = null;
+	
+	public void dibujarPiedras(Entorno e) {
+		if(jugador.piedras[0]!=null) {
+			jugador.piedras[0].dibujarPiedra(e);
+			jugador.piedras[0].mover();
+		}
+		
+	}
+	
+	public boolean piedras() {
+		
+		if(jugador.piedras[0]!=null) {
+			if(jugador.piedras[0].x >= 1300) {
+				jugador.piedras[0]=null;
+				jugador.puedeDisparar=true;
+			}
+		}
+		for(int i = 0 ; i < tigres.length;i++) {
+			if(tigres[i]!=null && jugador.piedras[0]!=null) {
+				if(tigres[i].tigreHitBox().intersects(jugador.piedras[0].piedraHitbox())) {
+					tigres[i] = null;
+					jugador.piedras[0]=null;
+					jugador.puedeDisparar=true;
+					ui.puntos++;
+					ui.addMessage("+1");
+					contadorEliminados++;
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 
 	// Utilidades 
 	public void renderizar(Entorno e) {
 		fondo.dibujar(entorno);
-		fondo.moverFondo();
 		dibujarArboles(entorno);
 		dibujarTigres(entorno);
-		piedras(entorno);
+		dibujarPiedras(e);
+		fondo.moverFondo();
 		jugador.actualizar(e);
 		ui.hud(e);	
 	}
