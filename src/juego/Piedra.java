@@ -10,6 +10,7 @@ public class Piedra {
 	boolean visible = true;
 	private int speed = 5;
 	Image img;
+	private double angulo;
 	
 	
 	public Piedra (int startX, int startY) {
@@ -24,25 +25,38 @@ public class Piedra {
 			visible = false;
 		}
 	}
+	
+
+	
 	public void dibujarPiedra(Entorno e) {
-		e.dibujarCirculo(x, y, 20,Color.yellow);
+		e.dibujarCirculo( x, y, 20,Color.BLUE);
 	}
+	
+
+	public void girar(double modificador) 
+	{
+		this.angulo = this.angulo + modificador;
+		if(this.angulo < 0) {
+			this.angulo +=2*Math.PI;
+		}
+        if(this.angulo > 2*Math.PI) {
+        	this.angulo -=2*Math.PI;
+        }
+			
+	}
+	
+	public void moverAdelante() {
+		this.y+=2;
+		if (this.y > 300) {
+			this.x -= Math.cos(this.angulo)*5;
+		}
+	}
+	
 
 	public Rectangle piedraHitbox() {
 		return new Rectangle(x, y, 20, 20);
 	}
-	
-	public int getX() {
-		return x;
-	}
-	
-	public int getY() {
-		return y;
-	}
-	
-	public boolean getVisible() {
-		return visible;
-	}
+
 	
 	
 	

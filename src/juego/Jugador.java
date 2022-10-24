@@ -11,7 +11,7 @@ public class Jugador  {
 	
 	Juego juego;
 	Entorno e;
-	Image jugador;
+	
 	public int x, y, dx, dy;
 	
 	public boolean saltando = false;
@@ -26,6 +26,8 @@ public class Jugador  {
 	public int width = 32;
 	public int height = 32;
 	public boolean puedeDisparar= true;
+	public int vidas = 3;
+	
 	
 	public Jugador(int x , int y){
 		this.x = x;
@@ -38,6 +40,7 @@ public class Jugador  {
 		dibujarJugador(e);
 	}
 	
+
 	public void moverDerecha() {
 		this.x += dx;
 	}
@@ -72,11 +75,7 @@ public class Jugador  {
 	public Rectangle jugadorHitBox() {
 		return new Rectangle(this.x,this.y,width,height);
 	}
-	public int getX() {
-		return this.x - width/2;
-	}
-	
-	
+
 	public void disparar() {
 		if(puedeDisparar) {
 			Piedra p = new Piedra(x,y);

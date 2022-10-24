@@ -3,7 +3,6 @@ package juego;
 import java.awt.Color;
 
 import java.awt.Rectangle;
-import java.util.Random;
 
 import entorno.Entorno;
 
@@ -13,8 +12,8 @@ public class Rama {
 	int x, y;
 	int width;
 	int height;
+	public Serpiente serpientes[] = new Serpiente[2];
 	
-	public Serpiente serpientes[] = new Serpiente[1];
 	
 	public Rama(int x, int y, int width,int height,Entorno e) {
 		this.x = x;
@@ -22,6 +21,7 @@ public class Rama {
 		this.width = width;
 		this.height= height;
 		spawnearSerpiente(e);
+		draw(e);
 	
 	}
 	
@@ -35,11 +35,15 @@ public class Rama {
 	
 	public void spawnearSerpiente(Entorno e) {
 			serpientes[0] = new Serpiente(x, y);
-			draw(e);
+			serpientes[1] = new Serpiente(x, y);
 	}
 	
 	public void draw(Entorno e) {
-		serpientes[0].dibujarSerpiente(e);
+		for (int i = 0; i < serpientes.length;i++) {
+			if(serpientes[i]!=null) {
+				serpientes[i].dibujarSerpiente(e);
+			}
+		}
 	}
-		
+	
 }

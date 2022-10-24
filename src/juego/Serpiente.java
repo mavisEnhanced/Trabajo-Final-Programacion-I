@@ -31,10 +31,8 @@ public class Serpiente {
 		e.dibujarImagen(serpiente,x, y-40, 0, 0.1);
 	}
 	
+
 	public Rectangle serpienteHitBox() {
 		return new Rectangle(x , y-40 , 40, 40);
 	}
-	
-
-
 }

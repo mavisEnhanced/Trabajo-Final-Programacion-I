@@ -51,7 +51,6 @@ public class Fondo {
 	}
 	// Crear lista de arboles
 	public void arboles(Entorno e) {
-		
 							   //x // y //Escala
 		arboles[0] = new Arbol(1200,400,e,r.nextDouble(0.5,1.2));
 		arboles[1] = new Arbol(1400,400,e,r.nextDouble(0.5,1.2));
@@ -60,22 +59,18 @@ public class Fondo {
 		arboles[4] = new Arbol(2000,400,e,r.nextDouble(0.5,1.2));
 	}
 	
-	
-	
-	
-	
 	//Dibujar el fondo en pantalla
 	public void dibujar(Entorno e) {
 		fondo = Herramientas.cargarImagen("Layer_0006_4.png");
 		fondo1 = Herramientas.cargarImagen("Layer_0003_6.png");
 		fondo2= Herramientas.cargarImagen("jgbk.png");
 		suelo = Herramientas.cargarImagen("Spring3Long1_0.png");
-		e.dibujarImagen(fondo2, 600, 200, 0, 3);
-		e.dibujarImagen(fondo1,x, y,0,2.1);
-		e.dibujarImagen(fondo, x2, y2,0,2.1);
-		e.dibujarImagen(fondo1,x2, y2,0,2.1);
-		e.dibujarImagen(fondo, x, y,0,2.1);
-		e.dibujarImagen(suelo,suelox,700, 0, 0.3);
+		//e.dibujarImagen(fondo2, 600, 200, 0, 3);
+		//e.dibujarImagen(fondo1,x, y,0,2.1);
+		//e.dibujarImagen(fondo, x2, y2,0,2.1);
+		//e.dibujarImagen(fondo1,x2, y2,0,2.1);
+		//e.dibujarImagen(fondo, x, y,0,2.1);
+		//e.dibujarImagen(suelo,suelox,700, 0, 0.3);
 	}
 }
 
