@@ -1,10 +1,13 @@
 package juego;
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.Random;
 
 
 
 import entorno.Entorno;
+import entorno.Herramientas;
 import entorno.InterfaceJuego;
 
 public class Juego extends InterfaceJuego {
@@ -20,7 +23,7 @@ public class Juego extends InterfaceJuego {
 	public final int optionsState=4;
 	public final int validateState=5;
 	public final int gameOver=6;
-	boolean tutorial=true;
+	boolean tutorial = true;
 
 	Jugador jugador;
 	Fondo fondo;
@@ -33,9 +36,17 @@ public class Juego extends InterfaceJuego {
 	
 	
 	public Tigre tigres[] = new Tigre[5];
+	public Ave aves[] = new Ave[2];
+	public ArrayList<Piedra> bullets = new ArrayList<>();
+	
+	
 	Ave ave;
 	public int contadorEnemigos = 0;
 	public int contadorEliminados = 0;
+	public int radius= 1;
+	public int maxRadius= 1200;
+	double angle = 10;
+
 	
 	Sound sound;
 	
@@ -51,7 +62,6 @@ public class Juego extends InterfaceJuego {
 		//Estado de juego
 		gameState = titleState;
 		sound = new Sound();
-		ave = new Ave(1300,80);
 		//playMusic(0);
 		
 		// Inicia el juego!
@@ -166,14 +176,24 @@ public class Juego extends InterfaceJuego {
 			if(entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {jugador.dx = 2;jugador.moverIzquierda();}
 			if(entorno.sePresiono(entorno.TECLA_ARRIBA)) {jugador.saltando = true;}
 			if(entorno.estaPresionada(entorno.TECLA_ENTER)) {jugador.disparar();}
-			if(contadorEnemigos < 5|| contadorEliminados>3) {
-				spawnearTigres();
-				contadorEnemigos++;
-			}
+	
 			
+			spawnearTigres();
+			spawnearAves();
 			renderizar(entorno);
+			dibujarAves(entorno,this);
+			
+//			if ( radius < maxRadius) {
+//				radius+=10;
+//				dibujarCirculo(entorno,radius);
+//			}
+//			if(radius >= maxRadius) {
+//				radius=1;
+//			}
 			colisionConRama(entorno);
-			colisionConEnemigo();
+			colisionConEnemigo(entorno);
+			colisionConAve(entorno);
+		
 			piedras();
 			colisionConSerpiente(entorno);
 			ui.drawMessage(entorno);
@@ -191,12 +211,13 @@ public class Juego extends InterfaceJuego {
 	// Eventos con enemigos
 	// Crar enemigos
 	public void spawnearTigres() {
-		contadorEliminados = 0;
-		tigres[0]= new Tigre(random.nextInt(1200,1600), alturaSuelo, random.nextInt(2,4));
-		tigres[1]= new Tigre(random.nextInt(1200,1600), alturaSuelo, random.nextInt(2,4));
-		tigres[2]= new Tigre(random.nextInt(1200,1600), alturaSuelo, random.nextInt(2,4));
-		tigres[3]= new Tigre(random.nextInt(1200,1600), alturaSuelo, random.nextInt(2,4));
-		tigres[4]= new Tigre(random.nextInt(1200,1600), alturaSuelo, random.nextInt(2,4));
+		//MEJOR SPAWN
+		for(int i = 0 ; i < tigres.length;i++) {
+			if(tigres[i]==null) {
+				tigres[i] = new Tigre(random.nextInt(1200,1600), alturaSuelo, random.nextInt(2,4));
+			}
+		}
+		
 	}
 	// Dibujar los enemigos
 	public void dibujarTigres(Entorno e) {
@@ -208,23 +229,57 @@ public class Juego extends InterfaceJuego {
 		}
 	}
 	
-	
-	public void dibujarPiedrasAve(Entorno e) {
-		for(int i = 0 ; i < ave.piedras.size();i++)
-			if(ave.piedras.get(i)!=null) {
-				ave.piedras.get(i).dibujarPiedra(e);
-				ave.piedras.get(i).moverAdelante();
-				if(ave.piedras.get(i).y>500) {
-					ave.piedras.remove(i);
-				}
+	public void spawnearAves() {
+		for(int i = 0 ; i < aves.length;i++) {
+			int r = random.nextInt(0,1);
+			if(aves[i] == null) {
+				aves[i] = new Ave(1240,80,r);
+			}
 		}
 	}
 	
+	public void dibujarAves(Entorno e,Juego juego) {
+		for(int i = 0 ; i < aves.length;i++) {
+			if(aves[i]!=null) {
+				aves[i].dibujarAve(e);
+				aves[i].mover(e,juego);
+			}
+			if(aves[i].r == 0) {
+				aves[i].ataque1();
+			}
+			else if(aves[i].r == 1){
+				aves[i].ataque2();
+			}
+		}
+	}
+	
+	public void dibujarCirculo(Entorno e,int radius) {
+		e.dibujarCirculo(620, 350, radius, Color.black);
+	}
+		
+		
+	
+	public void colisionConAve(Entorno e) {
+		for(int i = 0 ; i < aves.length;i++) {
+			if(aves[i]!=null) {
+				if(aves[i].aveHitbox().intersects(jugador.jugadorHitBox())) {
+					ui.vfx(aves[i].x, aves[i].y,e);
+					aves[i] = null;
+					//jugador.vidas--;
+					ui.addMessage("-1 Vida");
+					contadorEliminados++;
+					}
+				}
+			}
+		}
+	
+	
 	// Colision con enemigo
-	public boolean colisionConEnemigo() {
+	public boolean colisionConEnemigo(Entorno e) {
 		for(int i = 0 ; i < tigres.length;i++) {
 			if(tigres[i]!=null) {
 				if(tigres[i].tigreHitBox().intersects(jugador.jugadorHitBox())) {
+					ui.vfx(tigres[i].x, tigres[i].y,e);
 					tigres[i] = null;
 					jugador.vidas--;
 					ui.addMessage("-1 Vida");
@@ -263,7 +318,7 @@ public class Juego extends InterfaceJuego {
 			if(fondo.arboles[i]!=null) {
 				// Colision del jugador con la parte de abajo de la rama
 				if(jugador.jugadorHitBox().intersects(fondo.arboles[i].rama.hitBox()) 
-						&& jugador.saltando==true) {jugador.saltando = false;jugador.caer = true;}
+						&& jugador.saltando==true) {jugador.saltando = false;jugador.caer = true;jugador.actualVelocidadSalto=jugador.velocidadSalto;}
 				// Colision del jugador con la parte de arriba de la rama
 				if(fondo.arboles[i].rama.hitBox().intersects(jugador.jugadorHitBox()) && 
 					jugador.jugadorHitBox().y <= fondo.arboles[i].rama.hitBox().y) {
@@ -281,6 +336,7 @@ public class Juego extends InterfaceJuego {
 			jugador.piedras[0].mover();
 		}
 	}
+
 	
 	public boolean piedras() {
 		if(jugador.piedras[0]!=null) {
@@ -289,6 +345,8 @@ public class Juego extends InterfaceJuego {
 		for(int i = 0 ; i < tigres.length;i++) {
 			if(tigres[i]!=null && jugador.piedras[0]!=null) {
 				if(tigres[i].tigreHitBox().intersects(jugador.piedras[0].piedraHitbox())) {
+					ui.vfx(tigres[i].x, tigres[i].y, entorno);
+					
 					tigres[i] = null;
 					jugador.piedras[0]=null;
 					jugador.puedeDisparar=true;
@@ -309,8 +367,7 @@ public class Juego extends InterfaceJuego {
 		dibujarArboles(entorno);
 		dibujarTigres(entorno);
 		dibujarPiedras(e);
-		dibujarPiedrasAve(e);
-		ave.actualizar(e);
+		//dibujarPiedrasAve(e);
 		jugador.actualizar(e);
 		ui.hud(e,this);	
 	}

@@ -123,6 +123,13 @@ public class UI {
 		e.escribirTexto(text,x,y);
 	}
 	
+	public void vfx(int x ,int y,Entorno e) {
+		
+		Image humo = Herramientas.cargarImagen("humo.gif");
+		e.dibujarImagen(humo,x, y, 0,1);
+		
+	}
+	
 	
 	public void tutorialKeys(int x, int y, Entorno e) {
 		up = Herramientas.cargarImagen("upKey.gif");

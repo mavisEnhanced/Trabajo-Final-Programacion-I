@@ -1,6 +1,5 @@
 package juego;
 
-import java.awt.Color;
 import java.awt.Image;
 
 import java.util.Random;
@@ -18,44 +17,40 @@ public class Arbol {
 	int width = 200;
 	int height= 400;
 	double scale;
-	int arbolGap = 500;
-	
-	
 	Random r = new Random();
+	int ramaY = r.nextInt(100,500);
 	
-	public Arbol(int x, int y, Entorno e,double scale) {
+	
+	public Arbol(int x, int y, Entorno e) {
 		this.x = x;
 		this.y = y;
-		this.scale = scale;
 		dibujarArbol(e);
 	}
 	
 	// Dibujar el arbol en pantalla
 	public void dibujarArbol(Entorno e) {
-		arbol = Herramientas.cargarImagen("arbolpng.png");
-		//PARA DEBUG
-		e.dibujarRectangulo(x, y, width, height,0, Color.WHITE);
+		arbol = Herramientas.cargarImagen("arbol.png");
 		////////////
-		e.dibujarImagen(arbol, x , y+(height/8) , 0,scale);
+		e.dibujarImagen(arbol,x, y + (height/4) ,0,4);
 		rama(e);
 	}
 	
 	public void mover() {
+		int gap = 1240; 
 		x-= 5;
 		if(x <= -150) {
-			x = 1200 + r.nextInt(1000,1500);
-			scale= r.nextDouble(0.5,1.2);
-			y = 560-(height/2);
+			x = gap + r.nextInt(300,600);
+			rama.y = r.nextInt(50,350);
+			gap+=200;
 		}
-		else if(x <=-150 & scale >=0.8) {
-			x = 1400 + r.nextInt(900,1300);
-			scale= r.nextDouble(0.5,1.2);
-			y = 560-(height/2);
+		if (gap >= 300) {
+			gap = 1240;
 		}
+
 	}
 	
 	public void rama(Entorno e) {
-		rama = new Rama(this.x,this.y,width/2,10,e);
+		rama = new Rama(this.x,ramaY,width/2,10,e);
 		rama.dibujarRama(e);
 	}
 	
