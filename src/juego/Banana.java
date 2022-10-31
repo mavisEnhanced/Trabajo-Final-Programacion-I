@@ -1,28 +1,16 @@
 package juego;
 
-import java.awt.Image;
-
-import entorno.Entorno;
 import entorno.Herramientas;
 
-public class Banana {
+public class Banana extends Frutas {
 
-	
-	Image banana;
-	int x , y;
-	
-	public Banana(int x, int y) {
-		this.x = x;
-		this.y =y;
+	public Banana() {
+		name = "banana";
+		image = Herramientas.cargarImagen("Banana_Peeled.png");
+		width=40;
+		height=40;
 	}
 	
 	
-	public void dibuajarBanana(Entorno e ) {
-		
-		banana= Herramientas.cargarImagen("Banana_Peeled.png");
-		e.dibujarImagen(banana, x, y, 0, 1);
-		
-	}
-	
-	
+
 }

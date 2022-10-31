@@ -18,7 +18,7 @@ public class Arbol {
 	int height= 400;
 	double scale;
 	Random r = new Random();
-	int ramaY = r.nextInt(100,500);
+	int ramaY = r.nextInt(50,350);
 	
 	
 	public Arbol(int x, int y, Entorno e) {
@@ -36,15 +36,11 @@ public class Arbol {
 	}
 	
 	public void mover() {
-		int gap = 1240; 
+		int gap = 600; 
 		x-= 5;
 		if(x <= -150) {
-			x = gap + r.nextInt(300,600);
-			rama.y = r.nextInt(50,350);
-			gap+=200;
-		}
-		if (gap >= 300) {
-			gap = 1240;
+			x = 1240 + gap;
+			ramaY = r.nextInt(80,350);
 		}
 
 	}
@@ -53,9 +49,5 @@ public class Arbol {
 		rama = new Rama(this.x,ramaY,width/2,10,e);
 		rama.dibujarRama(e);
 	}
-	
-	
-	
-	
-	
+
 }

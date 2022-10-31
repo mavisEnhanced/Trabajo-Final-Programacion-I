@@ -27,11 +27,9 @@ public class UI {
 	int counter = 100;
 	
 	public UI (Entorno entorno,Juego juego) {
-		hud(entorno,juego);
-		drawMessage(entorno);
-		
+
 		try {
-			InputStream is = getClass().getResourceAsStream("/font/DeterminationSansWebRegular-369X.ttf");
+			InputStream is = getClass().getResourceAsStream("/font/x12y16pxMaruMonica.ttf");
 			maruMonica = Font.createFont(Font.TRUETYPE_FONT, is);
 		} catch (FontFormatException e) {
 			e.printStackTrace();
@@ -39,35 +37,34 @@ public class UI {
 			e.printStackTrace();
 		}
 		pointer = Herramientas.cargarImagen("Pointer.gif");
-		letra = new Font("Microsoft Yahei", Font.BOLD,60);
 	}
 		
-	public void draw(Entorno e) {
-		e.getGraphics().setFont(maruMonica);
-		e.getGraphics().setColor(Color.WHITE);
+	public void TitleScreen(Entorno e) {
 		titulo(e);
 	}
 	
-	public void hud(Entorno e,Juego juego) {
-		e.cambiarFont("Microsoft Yahei", 40,Color.white);
-		e.getGraphics().setFont(maruMonica);
-		heart = Herramientas.cargarImagen("HeartUD.png");
+	public void HUD(Entorno e,Juego juego) {
+		e.setFont(letra);
+		heart = Herramientas.cargarImagen("heart.png");
 		int i = juego.jugador.vidas;
 		switch(i) {
-			case 3: e.dibujarImagen(heart,50, 50, 0, 0.1);
-			e.dibujarImagen(heart,100, 50, 0, 0.1);
-			e.dibujarImagen(heart,150, 50, 0, 0.1);
+			case 3: e.dibujarImagen(heart,160, 40, 0, 0.2);
+			e.dibujarImagen(heart,210, 40, 0, 0.2);
+			e.dibujarImagen(heart,260, 40, 0, 0.2);
 				break;
-			case 2:e.dibujarImagen(heart,50,50, 0, 0.1);
-				e.dibujarImagen(heart,100, 50, 0, 0.1);
+			case 2:e.dibujarImagen(heart,160,40, 0, 0.2);
+				e.dibujarImagen(heart,210, 40, 0, 0.2);
 				break;
-			case 1:e.dibujarImagen(heart,50,50, 0, 0.1);
+			case 1:e.dibujarImagen(heart,160,40, 0, 0.2);
 				break;
 		}
 		
-		
-		e.cambiarFont("Microsoft Yahei", 30,Color.PINK);
-		String text = "Puntos : ";
+		Image icon = Herramientas.cargarImagen("border.png");
+		Image monkey= Herramientas.cargarImagen("monkey.png");
+		e.dibujarImagen(icon,70,70, 0,8);
+		e.dibujarImagen(monkey, 55, 70, 0,0.2);
+		e.cambiarFont("Microsoft Yahei", 50,Color.BLACK);
+		String text = "PUNTOS: ";
 		e.escribirTexto(text + puntos,590,50);
 	}
 	
@@ -124,10 +121,13 @@ public class UI {
 	}
 	
 	public void vfx(int x ,int y,Entorno e) {
-		
 		Image humo = Herramientas.cargarImagen("humo.gif");
 		e.dibujarImagen(humo,x, y, 0,1);
-		
+	}
+	
+	public void clawEffect(int x,int y,Entorno e) {
+		Image claw = Herramientas.cargarImagen("claw.gif");
+		e.dibujarImagen(claw,x, y, 0,5);
 	}
 	
 	
@@ -145,7 +145,7 @@ public class UI {
 	
 	public void drawMessage(Entorno e) {
 		int messageX = 30;
-		int messageY = 100;
+		int messageY = 250;
 		for (int i =0 ; i < message.size();i++) {
 			if( message.get(i)!=null) {
 				textPopUp(message.get(i),messageX,messageY+1,e);
@@ -164,14 +164,14 @@ public class UI {
 	public void pauseMenu(Entorno e) {
 		e.cambiarFont("Microsoft Yahei",60,Color.WHITE);
 		String text = "PAUSA";
-		e.escribirTexto(text, centerText(text, e), 100);
+		e.escribirTexto(text,600 , 100);
 		pointer = Herramientas.cargarImagen("Pointer.gif");
-		int x = centerText(text,e) ;
+		int x = 600 ;
 		int y = 100;
 		
 		e.cambiarFont("Microsoft Yahei",40,Color.WHITE);
 		text = "CONTINUAR";
-		x = centerText(text,e); 
+		x = 600; 
 		y+= 32*6;
 	
 		e.escribirTexto(text, x, y);
@@ -181,7 +181,7 @@ public class UI {
 		}
 		text = "OPCIONES";
 	
-		x = centerText(text,e);
+		x = 600;
 		y+= 32*3;
 		e.escribirTexto(text, x, y);
 		if(commandNum==1) {
@@ -189,7 +189,7 @@ public class UI {
 			e.dibujarImagen(pointer, x-32, y-10, 0, 1);
 		}
 		text = "SALIR";
-		x= centerText(text,e); 
+		x= 600; 
 		y+= 32*3;
 		e.escribirTexto(text, x, y);
 		if(commandNum==2) {
@@ -203,7 +203,7 @@ public class UI {
 		e.cambiarFont("Microsoft Yahei",60,Color.WHITE);
 		currentDialogue = "Esta seguro que \ndesea salir del juego?";
 		for(String line: currentDialogue.split("\n")) {
-			e.escribirTexto(line,centerText(currentDialogue,e), textY);
+			e.escribirTexto(line,600, textY);
 			textY+=60;
 		}
 		
@@ -213,7 +213,7 @@ public class UI {
 		String text="";
 		e.cambiarFont("Microsoft Yahei",40,Color.WHITE);
 		text = "SI";
-		x = centerText(text,e); 
+		x = 600; 
 		y+= 32*6;
 	
 		e.escribirTexto(text, x, y);
@@ -222,7 +222,7 @@ public class UI {
 		}
 		text = "NO";
 	
-		x = centerText(text,e); 
+		x = 600; 
 		y+= 32*3;
 		e.escribirTexto(text, x , y);
 		if(commandNum==1) {
@@ -237,15 +237,15 @@ public class UI {
 		
 		e.cambiarFont("Microsoft Yahei",60,Color.WHITE);
 		String text = "OPCIONES";
-		e.escribirTexto(text, centerText(text,e), 30);
+		e.escribirTexto(text, 600, 30);
 		
 		
-		int x = centerText(text,e);
+		int x = 600;
 		int y = 100;
 		
 		e.cambiarFont("x12y16pxMaruMonica.ttf",40,Color.WHITE);
 		text = "Musica";
-		x = centerText(text,e); 
+		x =600; 
 		y+= 32*6;
 		e.escribirTexto(text, x, y);
 		e.dibujarRectangulo(x + 300, y, 120, 24, 0, Color.white);
@@ -256,7 +256,7 @@ public class UI {
 		}
 		e.cambiarFont("x12y16pxMaruMonica.ttf",40,Color.WHITE);
 		text = "Efectos de Sonido";
-		x = centerText(text,e); 
+		x = 600; 
 		y+= 32*3;
 		e.escribirTexto(text, x, y);
 		if(commandNum==1) {
@@ -265,14 +265,14 @@ public class UI {
 		
 		
 		text = "Controles";
-		x = centerText(text,e); 
+		x = 600; 
 		y+= 32*3;
 		e.escribirTexto(text, x, y);
 		if(commandNum==2) {
 			e.dibujarImagen(pointer, x-32, y-10, 0, 1);
 		}
 		text = "Atras";
-		x= centerText(text,e); 
+		x= 600; 
 		y+= 32*3;
 		e.escribirTexto(text, x, y);
 		if(commandNum==3) {
@@ -281,33 +281,37 @@ public class UI {
 	}
 	
 	public void gameOver(Entorno e) {
+		Image gameover= Herramientas.cargarImagen("Gameover.png");
+		e.dibujarImagen(gameover,e.ancho()/2, (e.alto()/2)-250,0,1);
 		e.cambiarFont("Microsoft Yahei",60,Color.WHITE);
-		e.escribirTexto("GAME OVER", 550, 100);
 		String text = "";
-		int x = centerText(text,e);
-		int y = 100;
+		int x = 500;
+		int y = 350;
+		
+		e.cambiarFont("Microsoft Yahei",40,Color.WHITE);
+		text = "Quiere volver a jugar?";
+		e.escribirTexto(text, x, y);
 		
 		
 		e.cambiarFont("Microsoft Yahei",40,Color.WHITE);
-		text = "Retry";
-		x = centerText(text,e); 
-		y+= 32*6;
+		text = "Si";
+		x = 600;
+		y += 100;
 		e.escribirTexto(text, x, y);
 	
 		if(commandNum==0) {
 			e.dibujarImagen(pointer, x-32, y-10, 0, 1);
 		}
 	
-		text = "Salir";
-		x = centerText(text,e); 
-		y+= 32*3;
+		text = "No";
+		x = 600; 
+		y+= 100;
 		e.escribirTexto(text, x , y);
 		if(commandNum==1) {
 			e.dibujarImagen(pointer, x-32, y-10, 0, 1);
 		}
 		
-		e.escribirTexto("Puntaje" + puntos, 550, 200);
-	
+		e.escribirTexto("Puntaje " + puntos, 550, 250);
 	}
 	public void drawTransition(Entorno e) {
 		counter--;
@@ -318,10 +322,5 @@ public class UI {
 		counter = 100;
 	}
 	
-	public int centerText(String text,Entorno e) {
-		int length= (int)e.getGraphics().getFontMetrics(letra).getStringBounds(text,e.getGraphics()).getWidth();
-		int x = e.ancho()/2 - length;
-		return x;
-	}
 	
 }

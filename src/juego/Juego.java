@@ -7,7 +7,6 @@ import java.util.Random;
 
 
 import entorno.Entorno;
-import entorno.Herramientas;
 import entorno.InterfaceJuego;
 
 public class Juego extends InterfaceJuego {
@@ -27,7 +26,6 @@ public class Juego extends InterfaceJuego {
 
 	Jugador jugador;
 	Fondo fondo;
-	Arbol arbol;
 	UI ui;
 	Graphics2D g2;
 	public int alturaSuelo = 560;
@@ -37,15 +35,20 @@ public class Juego extends InterfaceJuego {
 	
 	public Tigre tigres[] = new Tigre[5];
 	public Ave aves[] = new Ave[2];
+	public Frutas frutas[] = new Frutas[5];
 	public ArrayList<Piedra> bullets = new ArrayList<>();
-	
-	
-	Ave ave;
+	public Serpiente serpientes[] = new Serpiente[5];
+
 	public int contadorEnemigos = 0;
 	public int contadorEliminados = 0;
-	public int radius= 1;
+	public double radius = 1;
 	public int maxRadius= 1200;
-	double angle = 10;
+	double pointx= 300;
+	double pointy= 300;
+	double angle,angle1,angle2;
+	float speed = 10;
+	public int i = 0;
+	boolean puedeSumar = false;
 
 	
 	Sound sound;
@@ -59,9 +62,11 @@ public class Juego extends InterfaceJuego {
 		//Creo Nuevo Jugador
 		jugador = new Jugador(50,alturaSuelo);
 		ui = new UI(entorno,this);
+		entorno.setFont(ui.maruMonica);
 		//Estado de juego
-		gameState = titleState;
+		gameState = playState;
 		sound = new Sound();
+		angle = 0;
 		//playMusic(0);
 		
 		// Inicia el juego!
@@ -78,7 +83,7 @@ public class Juego extends InterfaceJuego {
 		
 		//MAIN MENU
 		if(gameState==titleState) {
-			ui.draw(entorno);
+			ui.TitleScreen(entorno);
 			if(entorno.sePresiono(entorno.TECLA_ENTER)) {
 				if(ui.commandNum==0) {gameState=playState;}
 				if (ui.commandNum==2) {System.exit(0);}
@@ -171,18 +176,14 @@ public class Juego extends InterfaceJuego {
 			if(jugador.vidas==0) {
 				gameState = gameOver;
 			}
+			
+			
 			if(entorno.sePresiono(entorno.TECLA_ALT) && gameState==playState) {gameState = pauseState;}
 			if(entorno.estaPresionada(entorno.TECLA_DERECHA)) {jugador.dx = 2;jugador.moverDerecha();}
 			if(entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {jugador.dx = 2;jugador.moverIzquierda();}
 			if(entorno.sePresiono(entorno.TECLA_ARRIBA)) {jugador.saltando = true;}
-			if(entorno.estaPresionada(entorno.TECLA_ENTER)) {jugador.disparar();}
-	
-			
-			spawnearTigres();
-			spawnearAves();
-			renderizar(entorno);
-			dibujarAves(entorno,this);
-			
+			if(entorno.sePresiono(entorno.TECLA_ENTER)) {jugador.disparar();}
+
 //			if ( radius < maxRadius) {
 //				radius+=10;
 //				dibujarCirculo(entorno,radius);
@@ -190,12 +191,19 @@ public class Juego extends InterfaceJuego {
 //			if(radius >= maxRadius) {
 //				radius=1;
 //			}
-			colisionConRama(entorno);
-			colisionConEnemigo(entorno);
-			colisionConAve(entorno);
-		
-			piedras();
-			colisionConSerpiente(entorno);
+			spawnearTigres();
+			spawnearAves();
+			spawnearSerpiente();
+			spawnearFrutas(entorno);
+			colisiones();
+			renderizar(entorno);
+			dibujarSerpiente(entorno);
+			draw(entorno);
+			
+			if(puedeSumar==true) {
+				puedeSumar = false;
+				ui.puntos+=1;
+			}
 			ui.drawMessage(entorno);
 			if(tutorial) {
 				ui.tutorialKeys(jugador.x + (jugador.width/8), jugador.y- (jugador.height/2), entorno);
@@ -208,18 +216,38 @@ public class Juego extends InterfaceJuego {
 	}	
 	
 	
-	// Eventos con enemigos
-	// Crar enemigos
+	public double Degree(double a) {
+		double answer;
+		answer = Math.PI * (a/180.0);
+		return answer;
+	}
+	
+	
+	public void draw(Entorno e) {
+		for(int i = 0; i<bullets.size();i++) {
+			if(bullets.get(i)!=null) {
+				bullets.get(i).dibujarPiedra(e);
+			}
+		}
+	}
+//	for (int i = 0 ; i < 360; i++) {
+//		bullets.add(new Piedra((int)pointx,(int)pointy));
+//		angle1 = Math.cos(Degree(angle+i));
+//		angle2 = Math.sin(Degree(angle+i));
+//		pointx += radius * angle1;
+//		pointy += radius * angle2;
+//		}
+//	}
+	
+	// CREACION DE ENEMIGOS
 	public void spawnearTigres() {
-		//MEJOR SPAWN
 		for(int i = 0 ; i < tigres.length;i++) {
 			if(tigres[i]==null) {
 				tigres[i] = new Tigre(random.nextInt(1200,1600), alturaSuelo, random.nextInt(2,4));
 			}
 		}
-		
 	}
-	// Dibujar los enemigos
+	
 	public void dibujarTigres(Entorno e) {
 		for(int i = 0 ; i < tigres.length;i++) {
 			if(tigres[i]!=null) {
@@ -231,7 +259,7 @@ public class Juego extends InterfaceJuego {
 	
 	public void spawnearAves() {
 		for(int i = 0 ; i < aves.length;i++) {
-			int r = random.nextInt(0,1);
+			int r = random.nextInt(0,2);
 			if(aves[i] == null) {
 				aves[i] = new Ave(1240,80,r);
 			}
@@ -257,9 +285,28 @@ public class Juego extends InterfaceJuego {
 		e.dibujarCirculo(620, 350, radius, Color.black);
 	}
 		
-		
+
 	
-	public void colisionConAve(Entorno e) {
+	// COLISIONES CON ENEMIGOS
+	public boolean colisionTigre(Entorno e) {
+		for(int i = 0 ; i < tigres.length;i++) {
+			if(tigres[i]!=null) {
+				if(tigres[i].tigreHitBox().intersects(jugador.jugadorHitBox())) {
+					ui.addMessage("-1 Vida");
+					jugador.vidas--;
+					ui.clawEffect(tigres[i].x, tigres[i].y-50,e);
+					tigres[i] = null;
+					
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	
+	public void colisionAve(Entorno e) {
 		for(int i = 0 ; i < aves.length;i++) {
 			if(aves[i]!=null) {
 				if(aves[i].aveHitbox().intersects(jugador.jugadorHitBox())) {
@@ -269,50 +316,99 @@ public class Juego extends InterfaceJuego {
 					ui.addMessage("-1 Vida");
 					contadorEliminados++;
 					}
+				else if(aves[i].x < -100 || aves[i].y >=560){
+					aves[i] = null;
+					}
 				}
 			}
 		}
 	
-	
-	// Colision con enemigo
-	public boolean colisionConEnemigo(Entorno e) {
-		for(int i = 0 ; i < tigres.length;i++) {
-			if(tigres[i]!=null) {
-				if(tigres[i].tigreHitBox().intersects(jugador.jugadorHitBox())) {
-					ui.vfx(tigres[i].x, tigres[i].y,e);
-					tigres[i] = null;
-					jugador.vidas--;
-					ui.addMessage("-1 Vida");
-					contadorEliminados++;
-					return true;
-				}
-			}
+	public void spawnearSerpiente() {
+		for (int i = 0; i < fondo.arboles.length;i++) {
+			serpientes[i] = new Serpiente(fondo.arboles[i].rama.x,fondo.arboles[i].rama.y);
 		}
-		return false;
 	}
+	
+	public void dibujarSerpiente(Entorno e) {
+		for (int i = 0; i < serpientes.length;i++) 
+			if(serpientes[i] !=null) {
+				serpientes[i].dibujarSerpiente(e);
+			}
+		}
 	
 	
 	public void colisionConSerpiente(Entorno e) {
-		for (int i = 0; i < fondo.arboles.length;i++) {
-			if(fondo.arboles[i].rama.serpientes!=null) {}
-				
+		for (int i = 0; i < serpientes.length;i++) {
+			if(serpientes[i]!=null) {
+				if((jugador.jugadorHitBox().intersects(serpientes[i].serpienteHitBox()))) {
+					System.out.println("col");
+					serpientes[i] = null;
+				}
+			}
 		}
 	}
 
-	// Eventos con elementos del mapa
 	
+	// EVENTOS DEL MAPA
 	
-	// Dibujar arboles en pantalla
+	// ARBOLES
 	public void dibujarArboles(Entorno e) {
-		for (int i=0; i < fondo.arboles.length;i++) {
+		for (int i = 0; i < fondo.arboles.length;i++) {
 			if(fondo.arboles[i]!=null) {
 				fondo.arboles[i].dibujarArbol(e);
 				fondo.arboles[i].mover();
+
 			}
 		}
 	}
 	
-	// Colision con rama del arbol // corregir bugs
+	// FRUTAS
+	public void spawnearFrutas(Entorno e) {
+		for(int i = 0 ; i < frutas.length;i++) {
+			int r = random.nextInt(0,6);
+			if(frutas[i] == null) {
+				if( r >=2) {
+					frutas[i] = new Banana();
+					frutas[i].x = random.nextInt(1240,1500);
+					frutas[i].y = random.nextInt(100,560);
+				}
+				if(r >2 && r<=4) {
+					frutas[i] = new Manzana();
+					frutas[i].x = random.nextInt(1240,1500);
+					frutas[i].y = random.nextInt(100,560);
+				}
+				if(r > 4) {
+					frutas[i] = new Especial();
+					frutas[i].x = random.nextInt(1240,1500);
+					frutas[i].y = random.nextInt(100,560);
+				}
+			}
+		}
+	}
+	
+	
+	public void dibujarFrutas(Entorno e) {
+		for(int i = 0 ; i < frutas.length;i++) {
+			if(frutas[i]!=null) {
+				frutas[i].dibujar(e);
+				frutas[i].mover();	
+			}
+		}
+	}
+	
+	
+	
+	// PIEDRAS JUGADOR
+	public void dibujarPiedras(Entorno e) {
+		if(jugador.piedras[0]!=null) {
+			jugador.piedras[0].dibujarPiedra(e);
+			jugador.piedras[0].mover();
+		}
+	}
+	
+	
+	//COLISIONES CON OBJETOS DEL MAPA
+	// COLISION CON ARBOL
 	public void colisionConRama(Entorno e) {	
 		for (int i = 0; i < fondo.arboles.length;i++) {
 			if(fondo.arboles[i]!=null) {
@@ -322,54 +418,92 @@ public class Juego extends InterfaceJuego {
 				// Colision del jugador con la parte de arriba de la rama
 				if(fondo.arboles[i].rama.hitBox().intersects(jugador.jugadorHitBox()) && 
 					jugador.jugadorHitBox().y <= fondo.arboles[i].rama.hitBox().y) {
-						jugador.saltando=false;
+						jugador.saltando = false;
 						jugador.caer = false;
-						if(jugador.x + jugador.width > fondo.arboles[i].rama.x + fondo.arboles[i].rama.width ) {jugador.caer=true;}
+						puedeSumar = true;
+						if(jugador.x + jugador.width > fondo.arboles[i].rama.x + fondo.arboles[i].rama.width ) {jugador.caer=true;puedeSumar=false;}
+						
 				}
 			}
 		}
 	}
 	
-	public void dibujarPiedras(Entorno e) {
-		if(jugador.piedras[0]!=null) {
-			jugador.piedras[0].dibujarPiedra(e);
-			jugador.piedras[0].mover();
+	
+	//COLISION CON FRUTAS
+	public void colisionFruta() {
+		for(int i = 0 ; i< frutas.length;i++) {
+			if(frutas[i]!=null) {
+				if(jugador.jugadorHitBox().intersects(frutas[i].hitbox())){
+					switch(frutas[i].name) {
+					case "banana":jugador.vidas+=1;frutas[i] = null;break;
+					case "Manzana":ui.puntos+=5;frutas[i] = null;break;
+					case "Especial":jugador.ataqueEspecial=true;frutas[i] = null;break;
+					}
+				}
+				else if(frutas[i].x<-100) {
+					frutas[i]=null;
+				}
+			}
 		}
 	}
+	
 
+	//COLISION DE LA PIEDRA CONTRA TIGRE
 	
 	public boolean piedras() {
 		if(jugador.piedras[0]!=null) {
 			if(jugador.piedras[0].x >= 1300) {jugador.piedras[0] = null;jugador.puedeDisparar=true;}
 		}
 		for(int i = 0 ; i < tigres.length;i++) {
-			if(tigres[i]!=null && jugador.piedras[0]!=null) {
+			if(tigres[i]!=null && jugador.piedras[0]!=null && jugador.ataqueEspecial==false) {
 				if(tigres[i].tigreHitBox().intersects(jugador.piedras[0].piedraHitbox())) {
 					ui.vfx(tigres[i].x, tigres[i].y, entorno);
-					
 					tigres[i] = null;
 					jugador.piedras[0]=null;
-					jugador.puedeDisparar=true;
+					jugador.puedeDisparar = true;
 					ui.puntos++;
 					ui.addMessage("+1");
-					contadorEliminados++;
 					return true;
 				}
 			}
+			else if(tigres[i]!=null && jugador.piedras[0]!=null && jugador.ataqueEspecial==true) {
+				if(tigres[i].tigreHitBox().intersects(jugador.piedras[0].piedraHitbox())) {
+					ui.vfx(tigres[i].x, tigres[i].y, entorno);
+					tigres[i] = null;
+					jugador.puedeDisparar = true;
+					ui.puntos++;
+					ui.addMessage("+1");
+					return true;
+				}
+			}
+			
 		}
 		return false;
 	}
 
-	// Utilidades 
+	// UTILIDADES
+	
+	
 	public void renderizar(Entorno e) {
-		fondo.dibujar(entorno);
+		fondo.dibujar(e);
 		fondo.moverFondo();
 		dibujarArboles(entorno);
-		dibujarTigres(entorno);
 		dibujarPiedras(e);
-		//dibujarPiedrasAve(e);
+		dibujarTigres(entorno);
+		dibujarFrutas(entorno);
+		dibujarAves(entorno,this);
 		jugador.actualizar(e);
-		ui.hud(e,this);	
+		//dibujarPiedrasAve(e);
+		ui.HUD(e,this);	
+	}
+	
+	public void colisiones() {
+		piedras();
+		colisionConRama(entorno);
+		colisionConSerpiente(entorno);
+		colisionAve(entorno);
+		colisionFruta();
+		colisionTigre(entorno);
 	}
 	
 	public void setDefaultValues() {
@@ -379,8 +513,6 @@ public class Juego extends InterfaceJuego {
 		ui.message.clear();
 		contadorEnemigos=0;
 		contadorEliminados=0;
-		
-		
 	}
 	
 	public void playMusic(int i) {

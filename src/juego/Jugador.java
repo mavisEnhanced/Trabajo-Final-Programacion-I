@@ -8,10 +8,8 @@ import entorno.Entorno;
 import entorno.Herramientas;
 
 public class Jugador  {
-	
 	Juego juego;
 	Entorno e;
-	
 	public int x, y, dx, dy;
 	
 	public boolean saltando = false;
@@ -20,6 +18,7 @@ public class Jugador  {
 	public double actualVelocidadSalto = velocidadSalto;
 	public double maxVelocidadCaida = 5;
 	public double actualVelocidadCaida = .1;
+	public boolean ataqueEspecial = false;
 	
 	Piedra p;
 	public Piedra piedras[] = new Piedra[1];
@@ -79,8 +78,7 @@ public class Jugador  {
 	public void disparar() {
 		if(puedeDisparar) {
 			Piedra p = new Piedra(x,y);
-			piedras[0]=p;
-			
+			piedras[0]= p;
 		}
 		puedeDisparar = false;
 	}

@@ -24,14 +24,12 @@ public class Serpiente {
 		this.y = y;
 	}
 	
-	
 	public void dibujarSerpiente(Entorno e) {
 		serpiente = Herramientas.cargarImagen("snake.png");
 		e.dibujarRectangulo(x, y-40, 40,40,0, Color.RED);
 		e.dibujarImagen(serpiente,x, y-40, 0, 0.1);
 	}
 	
-
 	public Rectangle serpienteHitBox() {
 		return new Rectangle(x , y-40 , 40, 40);
 	}
