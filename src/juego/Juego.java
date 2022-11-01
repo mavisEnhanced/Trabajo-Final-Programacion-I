@@ -1,11 +1,5 @@
 package juego;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.util.ArrayList;
 import java.util.Random;
-
-
-
 import entorno.Entorno;
 import entorno.InterfaceJuego;
 
@@ -16,61 +10,46 @@ public class Juego extends InterfaceJuego {
 	// Variables y métodos propios de cada grupo
 	public int gameState;
 	public final int titleState = 0;
-	public final int tutorialState=1;
+	public final int tutorialState = 1;
 	public final int playState = 2;
-	public final int pauseState =3;
-	public final int optionsState=4;
-	public final int validateState=5;
-	public final int gameOver=6;
+	public final int pauseState = 3;
+	public final int optionsState = 4;
+	public final int validateState = 5;
+	public final int gameOver = 6;
 	boolean tutorial = true;
-
+	
 	Jugador jugador;
 	Fondo fondo;
 	UI ui;
-	Graphics2D g2;
+	Sound sound;
 	public int alturaSuelo = 560;
-	private Random random = new Random();
-	public int xAleatoria = random.nextInt(1200,1600);
+	boolean inGame= false;
 	
+	private Random random = new Random();
 	
 	public Tigre tigres[] = new Tigre[5];
 	public Ave aves[] = new Ave[2];
 	public Frutas frutas[] = new Frutas[5];
-	public ArrayList<Piedra> bullets = new ArrayList<>();
 	public Serpiente serpientes[] = new Serpiente[5];
 
-	public int contadorEnemigos = 0;
-	public int contadorEliminados = 0;
-	public double radius = 1;
-	public int maxRadius= 1200;
-	double pointx= 300;
-	double pointy= 300;
-	double angle,angle1,angle2;
-	float speed = 10;
-	public int i = 0;
-	boolean puedeSumar = false;
 
-	
-	Sound sound;
 	
 	public Juego() {
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Selva Mono Capuchino - Grupo 10 - v1", 1240, 700);
 		// Inicializar lo que haga falta para el juego
 		//Nivel
-		fondo = new Fondo(entorno);
-		//Creo Nuevo Jugador
 		jugador = new Jugador(50,alturaSuelo);
+		fondo = new Fondo(entorno,this);
+		//Creo Nuevo Jugador
 		ui = new UI(entorno,this);
 		entorno.setFont(ui.maruMonica);
 		//Estado de juego
-		gameState = playState;
+		gameState = titleState;
 		sound = new Sound();
-		angle = 0;
-		//playMusic(0);
-		
 		// Inicia el juego!
 		this.entorno.iniciar();
+		//playMusic(0);
 	}
 	/**
 	 * Durante el juego, el método tick() será ejecutado en cada instante y por lo
@@ -79,13 +58,13 @@ public class Juego extends InterfaceJuego {
 	 * del TP para mayor detalle).
 	 */
 	public void tick() {
-		// Estado del juego
 		
+		// Estado del juego
 		//MAIN MENU
-		if(gameState==titleState) {
+		if(gameState == titleState) {
 			ui.TitleScreen(entorno);
 			if(entorno.sePresiono(entorno.TECLA_ENTER)) {
-				if(ui.commandNum==0) {gameState=playState;}
+				if(ui.commandNum==0) {gameState = tutorialState;}
 				if (ui.commandNum==2) {System.exit(0);}
 			}
 			if(entorno.sePresiono(entorno.TECLA_ARRIBA)) {ui.commandNum--;
@@ -93,19 +72,30 @@ public class Juego extends InterfaceJuego {
 			if(entorno.sePresiono(entorno.TECLA_ABAJO)) {ui.commandNum++;if(ui.commandNum > 2) {ui.commandNum = 0;}}
 		}
 		
-		if(gameState== tutorialState) {
-			//ui.tutorial()
+		if(gameState == tutorialState) {
+			ui.tutorial(entorno);
+			if(entorno.sePresiono(entorno.TECLA_DERECHA)) {
+				ui.tutorial+=1;
+			}
+			if(ui.tutorial == 3 && entorno.sePresiono(entorno.TECLA_DERECHA ) && !inGame) {
+				gameState = playState;
+				ui.tutorial = 0;
+			}
+			else if(ui.tutorial == 3 && entorno.sePresiono(entorno.TECLA_DERECHA ) && inGame) {
+				gameState = optionsState;
+				ui.tutorial = 0;
+			}
 		}
 		
 		//PAUSE MENU
 		if(gameState == pauseState) {
-			
 			ui.pauseMenu(entorno);
+			
 			if(entorno.sePresiono(entorno.TECLA_ESPACIO) && gameState == pauseState) {gameState = playState;}
 			if(entorno.sePresiono(entorno.TECLA_ENTER)) {
-				if(ui.commandNum==0) {gameState=playState;}
-				if(ui.commandNum==1) {gameState = optionsState;}
-				if (ui.commandNum==2) {gameState=validateState;}
+				if(ui.commandNum==0) {;gameState = playState;}
+				if(ui.commandNum==1) {;gameState = optionsState;}
+				if (ui.commandNum==2) {;gameState= validateState;}
 			}
 			if(entorno.sePresiono(entorno.TECLA_ARRIBA)) {ui.commandNum--;
 				if(ui.commandNum < 0) {ui.commandNum = 2;}
@@ -119,13 +109,13 @@ public class Juego extends InterfaceJuego {
 		if(gameState == optionsState) {
 			ui.optionsScreen(entorno,this);
 			if(entorno.sePresiono(entorno.TECLA_IZQUIERDA)) {
-				if(ui.commandNum==0 && sound.volumeScale > 0) {sound.volumeScale--;sound.checkVolume();}
+				if(ui.commandNum == 0 && sound.volumeScale > 0) {sound.volumeScale--;sound.checkVolume();}
 			}
 			if(entorno.sePresiono(entorno.TECLA_DERECHA)) {
 				if(ui.commandNum==0 && sound.volumeScale <5) {sound.volumeScale++;sound.checkVolume();}
 			}
 			if(entorno.sePresiono(entorno.TECLA_ENTER)) {
-				if(ui.commandNum==1) {}
+				if(ui.commandNum==2) {gameState=tutorialState;}
 				if (ui.commandNum==3) {ui.commandNum=0; gameState = pauseState;}
 			}
 			if(entorno.sePresiono(entorno.TECLA_ARRIBA)) {ui.commandNum--;
@@ -155,9 +145,10 @@ public class Juego extends InterfaceJuego {
 		
 		// GAME OVER
 		if (gameState == gameOver) {
-			ui.gameOver(entorno);
+			ui.gameOver(entorno,this);
 			if(entorno.sePresiono(entorno.TECLA_ENTER)) {
-				if(ui.commandNum ==0) {setDefaultValues();gameState=playState;ui.drawTransition(entorno);}
+				if(ui.commandNum ==0) {
+					setDefaultValues(entorno);gameState=playState;}
 				if(ui.commandNum==1) {System.exit(0);}
 			}
 			if(entorno.sePresiono(entorno.TECLA_ARRIBA)) {
@@ -172,78 +163,50 @@ public class Juego extends InterfaceJuego {
 		
 		// JUEGO
 		if(gameState == playState) {
+			inGame = true;
 			// Eventos del juego
 			if(jugador.vidas==0) {
 				gameState = gameOver;
+				inGame=false;
 			}
 			
+			if(jugador.coin == 10) {
+				gameState = gameOver;
+				inGame = false;
+			}
 			
 			if(entorno.sePresiono(entorno.TECLA_ALT) && gameState==playState) {gameState = pauseState;}
 			if(entorno.estaPresionada(entorno.TECLA_DERECHA)) {jugador.dx = 2;jugador.moverDerecha();}
 			if(entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {jugador.dx = 2;jugador.moverIzquierda();}
-			if(entorno.sePresiono(entorno.TECLA_ARRIBA)) {jugador.saltando = true;}
+			if(entorno.sePresiono(entorno.TECLA_ARRIBA)) {jugador.saltando = true;jugador.salto = true;}
+			if(entorno.sePresiono(entorno.TECLA_ABAJO)) {jugador.caer = true;}
 			if(entorno.sePresiono(entorno.TECLA_ENTER)) {jugador.disparar();}
-
-//			if ( radius < maxRadius) {
-//				radius+=10;
-//				dibujarCirculo(entorno,radius);
-//			}
-//			if(radius >= maxRadius) {
-//				radius=1;
-//			}
 			spawnearTigres();
 			spawnearAves();
-			spawnearSerpiente();
 			spawnearFrutas(entorno);
+
 			colisiones();
 			renderizar(entorno);
-			dibujarSerpiente(entorno);
-			draw(entorno);
-			
-			if(puedeSumar==true) {
-				puedeSumar = false;
-				ui.puntos+=1;
-			}
+
 			ui.drawMessage(entorno);
 			if(tutorial) {
 				ui.tutorialKeys(jugador.x + (jugador.width/8), jugador.y- (jugador.height/2), entorno);
-				if(entorno.sePresiono(entorno.TECLA_ARRIBA ) || entorno.sePresiono(entorno.TECLA_ENTER)) {
+				if(entorno.sePresiono(entorno.TECLA_ARRIBA )) {
 					tutorial = false;
 				}
 			}
 		}
-
+		
 	}	
 	
 	
-	public double Degree(double a) {
-		double answer;
-		answer = Math.PI * (a/180.0);
-		return answer;
-	}
-	
-	
-	public void draw(Entorno e) {
-		for(int i = 0; i<bullets.size();i++) {
-			if(bullets.get(i)!=null) {
-				bullets.get(i).dibujarPiedra(e);
-			}
-		}
-	}
-//	for (int i = 0 ; i < 360; i++) {
-//		bullets.add(new Piedra((int)pointx,(int)pointy));
-//		angle1 = Math.cos(Degree(angle+i));
-//		angle2 = Math.sin(Degree(angle+i));
-//		pointx += radius * angle1;
-//		pointy += radius * angle2;
-//		}
-//	}
-	
 	// CREACION DE ENEMIGOS
+	
+	//TIGRES
 	public void spawnearTigres() {
 		for(int i = 0 ; i < tigres.length;i++) {
-			if(tigres[i]==null) {
-				tigres[i] = new Tigre(random.nextInt(1200,1600), alturaSuelo, random.nextInt(2,4));
+			if(tigres[i] == null) {
+				tigres[i] = new Tigre(random.nextInt(1200,1600), alturaSuelo, random.nextInt(2,5));
 			}
 		}
 	}
@@ -257,6 +220,7 @@ public class Juego extends InterfaceJuego {
 		}
 	}
 	
+	//AGUILA
 	public void spawnearAves() {
 		for(int i = 0 ; i < aves.length;i++) {
 			int r = random.nextInt(0,2);
@@ -272,92 +236,57 @@ public class Juego extends InterfaceJuego {
 				aves[i].dibujarAve(e);
 				aves[i].mover(e,juego);
 			}
-			if(aves[i].r == 0) {
+			if(aves[i]!=null && aves[i].r == 0) {
 				aves[i].ataque1();
 			}
-			else if(aves[i].r == 1){
+			else if(aves[i]!=null && aves[i].r == 1){
 				aves[i].ataque2();
 			}
 		}
 	}
-	
-	public void dibujarCirculo(Entorno e,int radius) {
-		e.dibujarCirculo(620, 350, radius, Color.black);
-	}
-		
 
-	
 	// COLISIONES CON ENEMIGOS
 	public boolean colisionTigre(Entorno e) {
 		for(int i = 0 ; i < tigres.length;i++) {
 			if(tigres[i]!=null) {
 				if(tigres[i].tigreHitBox().intersects(jugador.jugadorHitBox())) {
+					tigres[i] = null;
 					ui.addMessage("-1 Vida");
 					jugador.vidas--;
-					ui.clawEffect(tigres[i].x, tigres[i].y-50,e);
-					tigres[i] = null;
-					
 					return true;
 				}
 			}
 		}
 		return false;
 	}
-	
-	
-	
-	public void colisionAve(Entorno e) {
+
+	public boolean colisionAve(Entorno e) {
 		for(int i = 0 ; i < aves.length;i++) {
 			if(aves[i]!=null) {
 				if(aves[i].aveHitbox().intersects(jugador.jugadorHitBox())) {
-					ui.vfx(aves[i].x, aves[i].y,e);
 					aves[i] = null;
-					//jugador.vidas--;
 					ui.addMessage("-1 Vida");
-					contadorEliminados++;
+					jugador.vidas--;
+					return true;
 					}
 				else if(aves[i].x < -100 || aves[i].y >=560){
 					aves[i] = null;
 					}
 				}
 			}
+			return false;
 		}
-	
-	public void spawnearSerpiente() {
-		for (int i = 0; i < fondo.arboles.length;i++) {
-			serpientes[i] = new Serpiente(fondo.arboles[i].rama.x,fondo.arboles[i].rama.y);
-		}
-	}
-	
-	public void dibujarSerpiente(Entorno e) {
-		for (int i = 0; i < serpientes.length;i++) 
-			if(serpientes[i] !=null) {
-				serpientes[i].dibujarSerpiente(e);
-			}
-		}
-	
-	
-	public void colisionConSerpiente(Entorno e) {
-		for (int i = 0; i < serpientes.length;i++) {
-			if(serpientes[i]!=null) {
-				if((jugador.jugadorHitBox().intersects(serpientes[i].serpienteHitBox()))) {
-					System.out.println("col");
-					serpientes[i] = null;
-				}
-			}
-		}
-	}
 
+	
 	
 	// EVENTOS DEL MAPA
-	
 	// ARBOLES
-	public void dibujarArboles(Entorno e) {
+	public void dibujarArboles(Entorno e,Juego juego) {
 		for (int i = 0; i < fondo.arboles.length;i++) {
 			if(fondo.arboles[i]!=null) {
-				fondo.arboles[i].dibujarArbol(e);
+				fondo.arboles[i].dibujarArbol(e,juego);
+				fondo.arboles[i].rama(e, juego);
 				fondo.arboles[i].mover();
-
 			}
 		}
 	}
@@ -365,7 +294,7 @@ public class Juego extends InterfaceJuego {
 	// FRUTAS
 	public void spawnearFrutas(Entorno e) {
 		for(int i = 0 ; i < frutas.length;i++) {
-			int r = random.nextInt(0,6);
+			int r = random.nextInt(0,7);
 			if(frutas[i] == null) {
 				if( r >=2) {
 					frutas[i] = new Banana();
@@ -375,17 +304,21 @@ public class Juego extends InterfaceJuego {
 				if(r >2 && r<=4) {
 					frutas[i] = new Manzana();
 					frutas[i].x = random.nextInt(1240,1500);
-					frutas[i].y = random.nextInt(100,560);
+					frutas[i].y = random.nextInt(100,400);
 				}
 				if(r > 4) {
-					frutas[i] = new Especial();
+					frutas[i] = new Blueberry();
 					frutas[i].x = random.nextInt(1240,1500);
-					frutas[i].y = random.nextInt(100,560);
+					frutas[i].y = random.nextInt(100,400);
+				}
+				if(r > 5) {
+					frutas[i] = new Moneda();
+					frutas[i].x = random.nextInt(1240,1500);
+					frutas[i].y = random.nextInt(100,300);
 				}
 			}
 		}
 	}
-	
 	
 	public void dibujarFrutas(Entorno e) {
 		for(int i = 0 ; i < frutas.length;i++) {
@@ -395,9 +328,7 @@ public class Juego extends InterfaceJuego {
 			}
 		}
 	}
-	
-	
-	
+
 	// PIEDRAS JUGADOR
 	public void dibujarPiedras(Entorno e) {
 		if(jugador.piedras[0]!=null) {
@@ -405,8 +336,7 @@ public class Juego extends InterfaceJuego {
 			jugador.piedras[0].mover();
 		}
 	}
-	
-	
+
 	//COLISIONES CON OBJETOS DEL MAPA
 	// COLISION CON ARBOL
 	public void colisionConRama(Entorno e) {	
@@ -414,15 +344,21 @@ public class Juego extends InterfaceJuego {
 			if(fondo.arboles[i]!=null) {
 				// Colision del jugador con la parte de abajo de la rama
 				if(jugador.jugadorHitBox().intersects(fondo.arboles[i].rama.hitBox()) 
-						&& jugador.saltando==true) {jugador.saltando = false;jugador.caer = true;jugador.actualVelocidadSalto=jugador.velocidadSalto;}
+						&& jugador.saltando == true&& 
+						jugador.jugadorHitBox().y >= fondo.arboles[i].rama.hitBox().y) {jugador.saltando = false;jugador.caer = true;jugador.actualVelocidadSalto=jugador.velocidadSalto;}
 				// Colision del jugador con la parte de arriba de la rama
 				if(fondo.arboles[i].rama.hitBox().intersects(jugador.jugadorHitBox()) && 
 					jugador.jugadorHitBox().y <= fondo.arboles[i].rama.hitBox().y) {
-						jugador.saltando = false;
 						jugador.caer = false;
-						puedeSumar = true;
-						if(jugador.x + jugador.width > fondo.arboles[i].rama.x + fondo.arboles[i].rama.width ) {jugador.caer=true;puedeSumar=false;}
-						
+						jugador.actualVelocidadCaida = .2;
+						jugador.actualVelocidadSalto = jugador.velocidadSalto;
+						if(jugador.salto) {
+							ui.puntos +=1;
+							ui.addMessage("PLATAFORMA: + 1");
+						}
+						if(jugador.x + jugador.width > fondo.arboles[i].rama.x + fondo.arboles[i].rama.width) {
+							jugador.caer=true;
+						}
 				}
 			}
 		}
@@ -435,84 +371,109 @@ public class Juego extends InterfaceJuego {
 			if(frutas[i]!=null) {
 				if(jugador.jugadorHitBox().intersects(frutas[i].hitbox())){
 					switch(frutas[i].name) {
-					case "banana":jugador.vidas+=1;frutas[i] = null;break;
-					case "Manzana":ui.puntos+=5;frutas[i] = null;break;
-					case "Especial":jugador.ataqueEspecial=true;frutas[i] = null;break;
+					case "banana":
+						if(jugador.vidas < 3) {
+							ui.addMessage("BANANA : + 1 VIDA");
+							jugador.vidas+=1;
+							ui.bananas++;
+							frutas[i] = null;
+							break;
+						}
+						else {
+							ui.addMessage("BANANA : + 2 PUNTOS");
+							ui.puntos+=2;
+							ui.bananas++;
+							frutas[i]=null;
+							break;
+						}
+					case "Manzana":ui.addMessage("MANZANA : + 5 PUNTOS");ui.puntos+=5;ui.manzanas++;frutas[i] = null;break;
+					case "Blueberry":ui.addMessage("BlUEBERRY : + 3 PUNTOS");ui.puntos+=3;ui.blueberries++;frutas[i] = null;break;
+					case "Moneda":ui.addMessage("MONEDAS : + 1"); jugador.coin+=1; frutas[i] = null;break;
 					}
 				}
-				else if(frutas[i].x<-100) {
+				else if(frutas[i].x <-50) {
 					frutas[i]=null;
 				}
 			}
 		}
 	}
 	
-
 	//COLISION DE LA PIEDRA CONTRA TIGRE
-	
-	public boolean piedras() {
+	public boolean piedrasTigre() {
 		if(jugador.piedras[0]!=null) {
-			if(jugador.piedras[0].x >= 1300) {jugador.piedras[0] = null;jugador.puedeDisparar=true;}
+			if(jugador.piedras[0].x >= 1300) {
+				jugador.piedras[0] = null;
+				jugador.puedeDisparar=true;
+			}
 		}
 		for(int i = 0 ; i < tigres.length;i++) {
-			if(tigres[i]!=null && jugador.piedras[0]!=null && jugador.ataqueEspecial==false) {
+			if(tigres[i]!=null && jugador.piedras[0]!=null) {
 				if(tigres[i].tigreHitBox().intersects(jugador.piedras[0].piedraHitbox())) {
-					ui.vfx(tigres[i].x, tigres[i].y, entorno);
 					tigres[i] = null;
 					jugador.piedras[0]=null;
 					jugador.puedeDisparar = true;
-					ui.puntos++;
-					ui.addMessage("+1");
+					ui.puntos+=5;
+					ui.addMessage("+5");
 					return true;
 				}
 			}
-			else if(tigres[i]!=null && jugador.piedras[0]!=null && jugador.ataqueEspecial==true) {
-				if(tigres[i].tigreHitBox().intersects(jugador.piedras[0].piedraHitbox())) {
-					ui.vfx(tigres[i].x, tigres[i].y, entorno);
-					tigres[i] = null;
-					jugador.puedeDisparar = true;
-					ui.puntos++;
-					ui.addMessage("+1");
-					return true;
-				}
-			}
-			
 		}
 		return false;
 	}
-
+	//COLISION DE LA PIEDRA CONTRA AVE
+	public boolean piedrasAve() {
+		if(jugador.piedras[0]!=null) {
+			if(jugador.piedras[0].x >= 1300) {
+				jugador.piedras[0] = null;
+				jugador.puedeDisparar=true;
+			}
+		}
+		for(int i = 0 ; i < aves.length;i++) {
+			if(aves[i]!=null && jugador.piedras[0]!=null) {
+				if(aves[i].aveHitbox().intersects(jugador.piedras[0].piedraHitbox())) {
+					aves[i] = null;
+					jugador.piedras[0]=null;
+					jugador.puedeDisparar = true;
+					ui.puntos+=5;
+					ui.addMessage("+5");
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	// UTILIDADES
-	
-	
 	public void renderizar(Entorno e) {
 		fondo.dibujar(e);
 		fondo.moverFondo();
-		dibujarArboles(entorno);
+		dibujarArboles(e,this);
+		dibujarAves(e,this);
 		dibujarPiedras(e);
-		dibujarTigres(entorno);
-		dibujarFrutas(entorno);
-		dibujarAves(entorno,this);
-		jugador.actualizar(e);
-		//dibujarPiedrasAve(e);
+		dibujarTigres(e);
+		dibujarFrutas(e);
+		jugador.actualizar(e,this);
 		ui.HUD(e,this);	
 	}
 	
 	public void colisiones() {
-		piedras();
+		piedrasTigre();
+		 piedrasAve();
 		colisionConRama(entorno);
-		colisionConSerpiente(entorno);
 		colisionAve(entorno);
 		colisionFruta();
 		colisionTigre(entorno);
 	}
 	
-	public void setDefaultValues() {
+	public void setDefaultValues(Entorno e) {
 		jugador.vidas = 3;
-		jugador.y = alturaSuelo;
+		jugador.coin = 0;
 		ui.puntos=0;
+		ui.bananas=0;
+		ui.blueberries=0;
+		ui.manzanas=0;
+		jugador.y = alturaSuelo;
 		ui.message.clear();
-		contadorEnemigos=0;
-		contadorEliminados=0;
 	}
 	
 	public void playMusic(int i) {

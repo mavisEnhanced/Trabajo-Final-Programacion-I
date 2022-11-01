@@ -10,6 +10,7 @@ import entorno.Herramientas;
 public class Jugador  {
 	Juego juego;
 	Entorno e;
+	Image Jugador = Herramientas.cargarImagen("mono.gif");
 	public int x, y, dx, dy;
 	
 	public boolean saltando = false;
@@ -17,28 +18,28 @@ public class Jugador  {
 	public double velocidadSalto = 8;
 	public double actualVelocidadSalto = velocidadSalto;
 	public double maxVelocidadCaida = 5;
-	public double actualVelocidadCaida = .1;
-	public boolean ataqueEspecial = false;
+	public double actualVelocidadCaida = .2;
 	
 	Piedra p;
 	public Piedra piedras[] = new Piedra[1];
-	public int width = 32;
-	public int height = 32;
+	public int width = Jugador.getWidth(e);
+	public int height = Jugador.getHeight(e);
 	public boolean puedeDisparar= true;
+	public boolean salto = false;
 	public int vidas = 3;
+	public int coin = 0;
 	
 	
 	public Jugador(int x , int y){
 		this.x = x;
 		this.y = y;
 	}
-	public void actualizar(Entorno e) {
+	public void actualizar(Entorno e,Juego juego) {
 		moverDerecha();
 		moverIzquierda();
 		saltar();
 		dibujarJugador(e);
 	}
-	
 
 	public void moverDerecha() {
 		this.x += dx;
@@ -50,8 +51,9 @@ public class Jugador  {
 	
 	public void saltar() {
 		if (saltando) {
+			salto = false;
 			y-= actualVelocidadSalto*2;
-			actualVelocidadSalto -= .2;
+			actualVelocidadSalto -= .3;
 			if(actualVelocidadSalto <=0) {
 				actualVelocidadSalto = velocidadSalto;
 				saltando = false;
@@ -84,9 +86,8 @@ public class Jugador  {
 	}
 	
 	public void dibujarJugador(Entorno e) {
-		//jugador = Herramientas.cargarImagen("upKey.gif");
-		e.dibujarRectangulo(x-8, y, width,height,0,Color.magenta);
-		//e.dibujarImagen(jugador, x-(width/4), y-40, 0,1);
+		//e.dibujarRectangulo(x-8, y, width,height,0,Color.magenta);
+		e.dibujarImagen(Jugador, x-(width/4), y, 0,2);
 	}
 
 	

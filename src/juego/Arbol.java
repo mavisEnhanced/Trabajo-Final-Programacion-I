@@ -12,7 +12,6 @@ public class Arbol {
 	Image arbol;
 	Rama rama;
 	
-	//ARBOL VALUES
 	int x,y;
 	int width = 200;
 	int height= 400;
@@ -21,18 +20,16 @@ public class Arbol {
 	int ramaY = r.nextInt(50,350);
 	
 	
-	public Arbol(int x, int y, Entorno e) {
+	public Arbol(int x, int y, Entorno e,Juego juego) {
 		this.x = x;
 		this.y = y;
-		dibujarArbol(e);
+		rama(e,juego);
 	}
 	
 	// Dibujar el arbol en pantalla
-	public void dibujarArbol(Entorno e) {
+	public void dibujarArbol(Entorno e,Juego juego) {
 		arbol = Herramientas.cargarImagen("arbol.png");
-		////////////
 		e.dibujarImagen(arbol,x, y + (height/4) ,0,4);
-		rama(e);
 	}
 	
 	public void mover() {
@@ -40,14 +37,15 @@ public class Arbol {
 		x-= 5;
 		if(x <= -150) {
 			x = 1240 + gap;
-			ramaY = r.nextInt(80,350);
+			ramaY = r.nextInt(100,450);
 		}
 
 	}
 	
-	public void rama(Entorno e) {
-		rama = new Rama(this.x,ramaY,width/2,10,e);
+	public void rama(Entorno e,Juego juego) {
+		rama = new Rama(this.x,ramaY,100,20,e,juego);
 		rama.dibujarRama(e);
+		
 	}
 
 }

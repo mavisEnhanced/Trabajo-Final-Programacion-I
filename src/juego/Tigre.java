@@ -10,14 +10,16 @@ import entorno.Herramientas;
 
 
 public class Tigre {
-	Image tigre,fx;
+	Entorno e;
+	Image tigre =Herramientas.cargarImagen("tigre.gif");
 	//Posicion de spawn y velocidad de movimiento
 	public int x;
 	public int y;
 	public int speed;
+	public int width= tigre.getWidth(e);
+	public int height= tigre.getHeight(e);
 	
 	Random random = new Random();
-	boolean estaVivo = true;
 
 	public Tigre(int x,int y, int speed) {
 		this.x = x;
@@ -26,29 +28,24 @@ public class Tigre {
 	}
 	
 	public void dibujarTigre(Entorno e) {
-		//tigre = Herramientas.cargarImagen("puma.gif");
-		if(estaVivo)
-			e.dibujarRectangulo(x, y, 60 ,50,0, Color.RED);
-			//e.dibujarImagen(tigre, x, y, 0, 0.5);
+			//e.dibujarRectangulo(x, y,width ,height,0, Color.RED);
+			e.dibujarImagen(tigre, x, y, 0,2.5);
 	}
 	
 	public void mover(Entorno e) {	
 		x = x - speed;
-		if(estaVivo && x <=-100) {
+		if( x <=-100) {
 			x = random.nextInt(1300,1600);
 			y = 560; 
 		}
-		
 		// Cuando llegue a maso menos la mitad, correra 
-		else if(estaVivo && x <= 700) {
+		else if( x <= 700) {
 			x = x - speed * random.nextInt(1,4);
-			//fx = Herramientas.cargarImagen("FX1.gif");
-			//e.dibujarImagen(fx, x+60, y, 0, 1);
 		}
 	}
 	
 	public Rectangle tigreHitBox() {
-		return new Rectangle(x , y , 100, 50);
+		return new Rectangle(x , y , width, height);
 	}
 	
 }

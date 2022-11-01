@@ -10,7 +10,6 @@ public class Fondo {
 	Juego juego;
 	Image fondo, fondo2,suelo;
 
-	
 	public Arbol arboles[] = new Arbol[5];
 	
 	int x = 620;
@@ -27,8 +26,8 @@ public class Fondo {
 	//int arbolGap;
 	
 	
-	public Fondo(Entorno e) {
-		arboles(e);
+	public Fondo(Entorno e,Juego juego) {
+		arboles(e,juego);
 		moverFondo();
 		dibujar(e);
 	}
@@ -47,13 +46,13 @@ public class Fondo {
 
 	}
 	// Crear lista de arboles
-	public void arboles(Entorno e) {
+	public void arboles(Entorno e,Juego juego) {
 							   //x // y 
-		arboles[0] = new Arbol(1200,300,e);
-		arboles[1] = new Arbol(1400,300,e);
-		arboles[2] = new Arbol(1600,300,e);
-		arboles[3] = new Arbol(1800,300,e);
-		arboles[4] = new Arbol(2000,300,e);
+		arboles[0] = new Arbol(1200,300,e, juego);
+		arboles[1] = new Arbol(1400,300,e,juego);
+		arboles[2] = new Arbol(1600,300,e,juego);
+		arboles[3] = new Arbol(1800,300,e,juego);
+		arboles[4] = new Arbol(2000,300,e,juego);
 	}
 	
 	//Dibujar el fondo en pantalla
@@ -65,8 +64,6 @@ public class Fondo {
 		e.dibujarImagen(fondo2,x, y,0,1);
 		e.dibujarImagen(fondo2, x2, y2,0,1);
 		e.dibujarImagen(suelo,suelox,350, 0,1);
-		//e.dibujarImagen(fondo1,x2, y2,0,2.1);
-		//e.dibujarImagen(fondo, x, y,0,2.1);
 	}
 }
 

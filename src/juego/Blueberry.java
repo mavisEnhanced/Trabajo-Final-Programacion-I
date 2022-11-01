@@ -2,14 +2,14 @@ package juego;
 
 import entorno.Herramientas;
 
-public class Especial extends Frutas{
+public class Blueberry extends Frutas{
 
 	
-	public Especial() {
-		name = "Especial";
+	public Blueberry() {
+		name = "Blueberry";
 		image = Herramientas.cargarImagen("Blueberry.png");
-		width=40;
-		height=40;
+		width= 40;
+		height= 40;
 	}
 	
 }
