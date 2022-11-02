@@ -7,7 +7,6 @@ import entorno.Entorno;
 public class Piedra {
 
 	int x,y;
-	boolean visible = true;
 	private int speed = 5;
 	Image img;
 
@@ -28,7 +27,4 @@ public class Piedra {
 		return new Rectangle(x, y, 20, 20);
 	}
 
-	
-	
-	
 }

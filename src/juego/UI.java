@@ -30,11 +30,10 @@ public class UI {
 	ArrayList<Integer> messageCounter = new ArrayList<>();
 	
 	public int commandNum = 0;
-	public int puntos=0;
-	public int bananas=0;
-	public int blueberries=0;
-	public int manzanas=0;
-	int counter = 100;
+	public int puntos = 0;
+	public int bananas = 0;
+	public int blueberries = 0;
+	public int manzanas =0;
 	
 	public UI (Entorno entorno,Juego juego) {
 		pointer = Herramientas.cargarImagen("Pointer.gif");
@@ -338,7 +337,7 @@ public class UI {
 			currentDialogue = "CONSIGUE UN TOTAL DE \n10 MONEDAS PARA ESCAPAR";
 			for(String line: currentDialogue.split("\n")) {
 				e.escribirTexto(line,x, y);
-				x +=80;
+				x +=50;
 				y +=70;
 			}
 

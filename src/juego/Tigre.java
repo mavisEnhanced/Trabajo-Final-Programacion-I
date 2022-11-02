@@ -40,7 +40,7 @@ public class Tigre {
 		}
 		// Cuando llegue a maso menos la mitad, correra 
 		else if( x <= 700) {
-			x = x - speed * random.nextInt(1,4);
+			x = x - speed * random.nextInt(2,5);
 		}
 	}
 	

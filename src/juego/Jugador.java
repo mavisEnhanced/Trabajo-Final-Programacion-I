@@ -24,7 +24,7 @@ public class Jugador  {
 	public Piedra piedras[] = new Piedra[1];
 	public int width = Jugador.getWidth(e);
 	public int height = Jugador.getHeight(e);
-	public boolean puedeDisparar= true;
+	public boolean puedeDisparar = true;
 	public boolean salto = false;
 	public int vidas = 3;
 	public int coin = 0;

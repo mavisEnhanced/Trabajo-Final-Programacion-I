@@ -11,15 +11,12 @@ import entorno.Herramientas;
 
 public class Ave {
 
+	Image aguila;
 	int x,y,r;
 	int width,heihgt;
-	Piedra p;
 	double angulo = 1;
 	Random random = new Random();
-	Image aguila;
-	
-	ArrayList <Piedra>piedras = new ArrayList<>();
-	
+
 	public Ave(int x , int y, int r) {
 		this.x = x;
 		this.y = y;

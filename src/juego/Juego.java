@@ -23,10 +23,9 @@ public class Juego extends InterfaceJuego {
 	UI ui;
 	Sound sound;
 	public int alturaSuelo = 560;
-	boolean inGame= false;
+	boolean inGame = false;
 	
 	private Random random = new Random();
-	
 	public Tigre tigres[] = new Tigre[5];
 	public Ave aves[] = new Ave[2];
 	public Frutas frutas[] = new Frutas[5];
@@ -298,7 +297,7 @@ public class Juego extends InterfaceJuego {
 			if(frutas[i] == null) {
 				if( r >=2) {
 					frutas[i] = new Banana();
-					frutas[i].x = random.nextInt(1240,1500);
+					frutas[i].x = random.nextInt(1240,1600);
 					frutas[i].y = random.nextInt(100,560);
 				}
 				if(r >2 && r<=4) {
@@ -434,8 +433,8 @@ public class Juego extends InterfaceJuego {
 					aves[i] = null;
 					jugador.piedras[0]=null;
 					jugador.puedeDisparar = true;
-					ui.puntos+=5;
-					ui.addMessage("+5");
+					ui.puntos+=7;
+					ui.addMessage("+7");
 					return true;
 				}
 			}
